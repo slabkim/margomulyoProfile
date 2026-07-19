@@ -1,0 +1,342 @@
+/* ============================================
+   Profile Page Styles
+   ============================================ */
+
+.page-header {
+  padding: calc(var(--navbar-height) + var(--space-4xl)) 0 var(--space-3xl);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
+  color: var(--color-white);
+  text-align: center;
+  position: relative;
+}
+
+.page-header h1 {
+  color: var(--color-white);
+  margin-bottom: var(--space-sm);
+}
+
+.page-header p {
+  color: rgba(255, 255, 255, 0.85);
+  max-width: 600px;
+  margin: 0 auto;
+  font-size: 1.1rem;
+}
+
+/* ---------- History Section ---------- */
+.history-section {
+  padding: var(--space-4xl) 0;
+}
+
+.history-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.history-content p {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin-bottom: var(--space-md);
+  color: var(--color-text-body);
+}
+
+.history-content h3 {
+  margin: var(--space-xl) 0 var(--space-md);
+}
+
+.name-origin-box {
+  background: var(--color-bg-cream);
+  padding: var(--space-xl);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--color-accent);
+  margin: var(--space-xl) 0;
+}
+
+.name-origin-box h4 {
+  margin-bottom: var(--space-md);
+  color: var(--color-earth-dark);
+}
+
+.name-origin-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.name-origin-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.name-origin-label {
+  font-weight: 700;
+  color: var(--color-primary);
+  width: 70px;
+}
+
+/* ---------- Vision Mission Section ---------- */
+.vision-mission-section {
+  padding: var(--space-4xl) 0;
+  background: var(--color-bg-light);
+}
+
+.vision-mission-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2xl);
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.vision-card, .mission-card {
+  background: var(--color-white);
+  padding: var(--space-2xl);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+}
+
+.vision-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: var(--color-accent);
+}
+
+.mission-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: var(--color-primary);
+}
+
+.vision-card h3, .mission-card h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+}
+
+.vision-icon {
+  color: var(--color-accent-dark);
+}
+
+.mission-icon {
+  color: var(--color-primary);
+}
+
+.vision-text {
+  font-size: 1.25rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--color-text-heading);
+  text-align: center;
+  margin: var(--space-lg) 0;
+}
+
+.mission-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.mission-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+}
+
+.mission-bullet {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(46, 125, 50, 0.1);
+  color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ---------- Geography Section ---------- */
+.geography-section {
+  padding: var(--space-4xl) 0;
+}
+
+.geo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3xl);
+  align-items: center;
+}
+
+.borders-box {
+  background: var(--color-bg-cream);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  margin-top: var(--space-xl);
+}
+
+.borders-box h4 {
+  margin-bottom: var(--space-md);
+}
+
+.border-item {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--space-sm) 0;
+  border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.border-item:last-child {
+  border-bottom: none;
+}
+
+.border-dir {
+  font-weight: 600;
+  color: var(--color-text-heading);
+}
+
+/* ---------- Gov Structure Section ---------- */
+.gov-section {
+  padding: var(--space-4xl) 0;
+  background: var(--color-earth);
+  color: var(--color-white);
+}
+
+.gov-section h2, .gov-section .subtitle {
+  color: var(--color-white);
+}
+
+.gov-tree {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2xl);
+}
+
+.gov-card {
+  background: var(--color-white);
+  padding: var(--space-lg);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  color: var(--color-text-body);
+  width: 260px;
+  box-shadow: var(--shadow-xl);
+}
+
+.gov-card.kades {
+  border-top: 4px solid var(--color-accent);
+  transform: scale(1.05);
+}
+
+.gov-photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  margin: 0 auto var(--space-md);
+  background: var(--color-bg-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-light);
+  overflow: hidden;
+  border: 3px solid var(--color-white);
+  box-shadow: var(--shadow-md);
+}
+
+.gov-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gov-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-text-heading);
+  margin-bottom: 4px;
+}
+
+.gov-position {
+  font-size: 0.85rem;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.gov-row {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-xl);
+  flex-wrap: wrap;
+  position: relative;
+}
+
+/* Simple connector lines for desktop */
+@media (min-width: 769px) {
+  .gov-connector {
+    position: relative;
+  }
+  
+  .gov-connector::after {
+    content: '';
+    position: absolute;
+    bottom: -32px;
+    left: 50%;
+    width: 2px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+  
+  .gov-row::before {
+    content: '';
+    position: absolute;
+    top: -32px;
+    left: 15%;
+    right: 15%;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.3);
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 968px) {
+  .vision-mission-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .geo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: calc(var(--navbar-height) + var(--space-2xl)) 0 var(--space-2xl);
+  }
+  
+  .gov-row {
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+  
+  .gov-card {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}
