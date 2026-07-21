@@ -19,7 +19,7 @@ export default async function AdminVillageHeadsPage({ searchParams }: { searchPa
     <form action={saveVillageHead} className="admin-form village-head-admin-form">
       <div className="admin-field-full admin-form-intro"><span>Tambah kepala desa</span><h2>Data kepemimpinan baru</h2><p>Gunakan tahun empat digit dan foto potret dengan orientasi tegak.</p></div>
       <label>Nama lengkap<input name="name" required maxLength={120} placeholder="Nama kepala desa" /></label>
-      <label>Jabatan<input value="Kepala Desa Margo Mulyo" readOnly aria-label="Jabatan" /></label>
+      <label>Jabatan<input value="Kepala Desa Margomulyo" readOnly aria-label="Jabatan" /></label>
       <label>Tahun mulai<input name="start_year" type="number" min="1900" max="2100" required placeholder="Contoh: 2024" /></label>
       <label>Tahun selesai<input name="end_year" type="number" min="1900" max="2100" required placeholder="Contoh: 2032" /></label>
       <label className="admin-field-full">Profil singkat<textarea name="profile" maxLength={2000} placeholder="Pengalaman, program utama, dan kontribusi selama masa jabatan" /></label>

@@ -1,4 +1,4 @@
 import './admin.css';
 
-export const metadata = { title: { default: 'Admin', template: '%s | Admin Margo Mulyo' }, robots: { index: false, follow: false } };
+export const metadata = { title: { default: 'Admin', template: '%s | Admin Margomulyo' }, robots: { index: false, follow: false } };
 export default function AdminRootLayout({children}:{children:React.ReactNode}){return <div className="admin-root">{children}</div>}

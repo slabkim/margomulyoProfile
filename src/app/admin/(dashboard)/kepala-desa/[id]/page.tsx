@@ -17,7 +17,7 @@ export default async function EditVillageHeadPage({ params, searchParams }: { pa
     <form action={saveVillageHead} className="admin-form village-head-admin-form">
       <input type="hidden" name="id" value={data.id} />
       <label>Nama lengkap<input name="name" required maxLength={120} defaultValue={data.name} /></label>
-      <label>Jabatan<input value="Kepala Desa Margo Mulyo" readOnly aria-label="Jabatan" /></label>
+      <label>Jabatan<input value="Kepala Desa Margomulyo" readOnly aria-label="Jabatan" /></label>
       <label>Tahun mulai<input name="start_year" type="number" min="1900" max="2100" required defaultValue={data.start_year} /></label>
       <label>Tahun selesai<input name="end_year" type="number" min="1900" max="2100" required defaultValue={data.end_year} /></label>
       <label className="admin-field-full">Profil singkat<textarea name="profile" maxLength={2000} defaultValue={data.profile} /></label>

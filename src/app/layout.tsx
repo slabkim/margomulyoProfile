@@ -9,9 +9,9 @@ const lora = Lora({ variable: "--font-display", subsets: ["latin"], display: "sw
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://margomulyo.desa.id"),
-  title: { default: "Desa Margo Mulyo | Pesawaran", template: "%s | Desa Margo Mulyo" },
-  description: "Portal resmi Desa Margo Mulyo, Kecamatan Tegineneng, Kabupaten Pesawaran, Lampung.",
-  openGraph: { title: "Desa Margo Mulyo", description: "Informasi, layanan, dan kabar terbaru Desa Margo Mulyo.", locale: "id_ID", type: "website" },
+  title: { default: "Desa Margomulyo | Pesawaran", template: "%s | Desa Margomulyo" },
+  description: "Portal resmi Desa Margomulyo, Kecamatan Tegineneng, Kabupaten Pesawaran, Lampung.",
+  openGraph: { title: "Desa Margomulyo", description: "Informasi, layanan, dan kabar terbaru Desa Margomulyo.", locale: "id_ID", type: "website" },
 };
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

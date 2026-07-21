@@ -5,7 +5,7 @@ set SUPABASE_TELEMETRY_DISABLED=1
 
 echo.
 echo ============================================
-echo   MIGRASI DATABASE DESA MARGO MULYO
+echo   MIGRASI DATABASE DESA Margomulyo
 echo ============================================
 echo.
 echo Project: gwmhopqlfvmjkxzthqya

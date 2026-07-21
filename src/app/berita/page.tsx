@@ -7,7 +7,7 @@ import '../public-pages.css';
 
 export const metadata = {
   title: 'Berita Desa',
-  description: 'Kabar dan kegiatan terbaru Desa Margo Mulyo.',
+  description: 'Kabar dan kegiatan terbaru Desa Margomulyo.',
 };
 
 const categories = ['Pertanian', 'Pelayanan', 'Kegiatan'] as const;
@@ -49,7 +49,7 @@ export default async function BeritaPage({
       <header className="page-hero" data-index="02">
         <div className="container">
           <div className="page-crumb">Beranda <span>/</span> Berita</div>
-          <h1>Kabar dari Margo Mulyo.</h1>
+          <h1>Kabar dari Margomulyo.</h1>
           <p>Catatan kegiatan, informasi pelayanan, dan perkembangan terbaru dari seluruh penjuru desa.</p>
         </div>
       </header>

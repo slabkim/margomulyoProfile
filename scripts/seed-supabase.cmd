@@ -5,7 +5,7 @@ set SUPABASE_TELEMETRY_DISABLED=1
 
 echo.
 echo ============================================
-echo   SEED DATA DUMMY DESA MARGO MULYO
+echo   SEED DATA DUMMY DESA Margomulyo
 echo ============================================
 echo.
 echo Data yang akan ditambahkan:

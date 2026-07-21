@@ -5,7 +5,7 @@ set SUPABASE_TELEMETRY_DISABLED=1
 
 echo.
 echo ============================================
-echo   HAPUS DATA DUMMY DESA MARGO MULYO
+echo   HAPUS DATA DUMMY DESA Margomulyo
 echo ============================================
 echo.
 echo Perintah ini hanya menghapus data dengan UUID dummy bawaan seeder.

@@ -11,7 +11,7 @@ import '../public-pages.css';
 
 export const metadata = {
   title: 'Data Desa',
-  description: 'Data resmi kependudukan, wilayah, dan potensi Desa Margo Mulyo.',
+  description: 'Data resmi kependudukan, wilayah, dan potensi Desa Margomulyo.',
 };
 
 export default async function StatistikPage() {
@@ -29,7 +29,7 @@ export default async function StatistikPage() {
   const summary = buildHomepageStatistics(statistics);
 
   return <>
-    <header className="page-hero" data-index="04"><div className="container"><div className="page-crumb">Beranda <span>/</span> Data Desa</div><h1>Data nyata, desa terbaca.</h1><p>Jelajahi kondisi penduduk, rincian setiap dusun, batas wilayah, penggunaan lahan, dan potensi Margo Mulyo berdasarkan dokumen resmi desa.</p></div></header>
+    <header className="page-hero" data-index="04"><div className="container"><div className="page-crumb">Beranda <span>/</span> Data Desa</div><h1>Data nyata, desa terbaca.</h1><p>Jelajahi kondisi penduduk, rincian setiap dusun, batas wilayah, penggunaan lahan, dan potensi Margomulyo berdasarkan dokumen resmi desa.</p></div></header>
 
     <section className="content-section surface-grid"><div className="container">
       <div className="official-data-banner"><FileSpreadsheet size={22} /><div><strong>Rekap resmi operator desa</strong><span>Data penduduk tahun {OFFICIAL_DATA_YEAR} · Data potensi dari Profil Desa tahun {POTENTIAL_DATA_YEAR}</span></div><i>{databaseReady ? 'Terhubung ke database' : 'Data resmi lokal'}</i></div>

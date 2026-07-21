@@ -56,9 +56,9 @@ export default function Navbar() {
   return (
     <header className={`site-header ${homeTop ? 'site-header--overlay' : 'site-header--solid'} ${open ? 'site-header--menu-open' : ''}`}>
       <div className="nav-shell">
-        <Link href="/" className="brand" aria-label="Beranda Desa Margo Mulyo" onClick={() => setOpen(false)}>
+        <Link href="/" className="brand" aria-label="Beranda Desa Margomulyo" onClick={() => setOpen(false)}>
           <span className="brand-mark"><PesawaranLogo priority sizes="43px" /></span>
-          <span><strong>Margo Mulyo</strong><small>Kabupaten Pesawaran</small></span>
+          <span><strong>Margomulyo</strong><small>Kabupaten Pesawaran</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Navigasi utama">
           {navLinks.map((link) => <Link key={link.href} href={link.href} className={isActive(link.href) ? 'active' : ''} aria-current={isActive(link.href) ? 'page' : undefined}>{link.label}</Link>)}

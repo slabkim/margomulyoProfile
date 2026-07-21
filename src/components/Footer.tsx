@@ -24,13 +24,13 @@ export default function Footer() {
         </div>
         <div className="footer-contact">
           <p className="footer-label">Kantor Desa</p>
-          <div><MapPin size={17} /><span>Desa Margo Mulyo, Kec. Tegineneng,<br />Kab. Pesawaran, Lampung</span></div>
+          <div><MapPin size={17} /><span>Desa Margomulyo, Kec. Tegineneng,<br />Kab. Pesawaran, Lampung</span></div>
           <div><Mail size={17} /><span>desa.margomulyo@pesawaran.go.id</span></div>
           <div><Clock size={17} /><span>Senin–Jumat, 08.00–13.00 WIB</span></div>
         </div>
       </div>
       <div className="container footer-bottom">
-        <span>© {new Date().getFullYear()} Pemerintah Desa Margo Mulyo</span>
+        <span>© {new Date().getFullYear()} Pemerintah Desa Margomulyo</span>
         <span>Kode Wilayah 18.09.03.2012</span>
       </div>
     </footer>

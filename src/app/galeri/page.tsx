@@ -6,14 +6,14 @@ import '../public-pages.css';
 
 export const metadata = {
   title: 'Galeri Desa',
-  description: 'Dokumentasi kegiatan dan potensi Desa Margo Mulyo.',
+  description: 'Dokumentasi kegiatan dan potensi Desa Margomulyo.',
 };
 
 const fallback = [
   { id: '1', title: 'Hamparan pertanian desa', album: 'Potensi Desa', image_url: null },
   { id: '2', title: 'Kegiatan kelompok tani', album: 'Pertanian', image_url: null },
   { id: '3', title: 'Panen bersama warga', album: 'Gotong Royong', image_url: null },
-  { id: '4', title: 'Lanskap Margo Mulyo', album: 'Lingkungan', image_url: null },
+  { id: '4', title: 'Lanskap Margomulyo', album: 'Lingkungan', image_url: null },
   { id: '5', title: 'Kebun produktif warga', album: 'Ekonomi', image_url: null },
 ];
 
@@ -61,7 +61,7 @@ export default async function GaleriPage({
         <div className="container">
           <div className="page-crumb">Beranda <span>/</span> Galeri</div>
           <h1>Wajah dan cerita desa.</h1>
-          <p>Dokumentasi kegiatan warga, potensi wilayah, serta momen kebersamaan di Desa Margo Mulyo.</p>
+          <p>Dokumentasi kegiatan warga, potensi wilayah, serta momen kebersamaan di Desa Margomulyo.</p>
         </div>
       </header>
       <section className="content-section">
@@ -69,7 +69,7 @@ export default async function GaleriPage({
           <div className="listing-head">
             <div className="section-heading">
               <span className="eyebrow">Dokumentasi</span>
-              <h2>Margo Mulyo dalam bingkai</h2>
+              <h2>Margomulyo dalam bingkai</h2>
             </div>
             <nav className="filter-chips" aria-label="Filter kategori galeri">
               <Link href={searchQuery ? { pathname: '/galeri', query: { cari: searchQuery } } : '/galeri'} className={!activeFilter ? 'active' : undefined} aria-current={!activeFilter ? 'page' : undefined}>Semua</Link>

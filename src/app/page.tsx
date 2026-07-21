@@ -40,13 +40,13 @@ export default async function HomePage() {
   return (
     <>
       <section className="home-hero">
-        <Image src="/images/hero-bg.png" alt="Hamparan lahan pertanian Desa Margo Mulyo" fill priority sizes="100vw" className="hero-image" />
+        <Image src="/images/hero-bg.png" alt="Hamparan lahan pertanian Desa Margomulyo" fill priority sizes="100vw" className="hero-image" />
         <div className="hero-shade" />
         <div className="container hero-layout">
           <div className="hero-copy">
             <p className="hero-kicker"><span /> Portal Resmi Pemerintah Desa</p>
             <h1>Tumbuh dari tanah,<br /><em>maju bersama.</em></h1>
-            <p className="hero-lead">Margo Mulyo adalah rumah bagi masyarakat agraris yang hidup dari kerja keras, gotong royong, dan harapan untuk masa depan yang lebih baik.</p>
+            <p className="hero-lead">Margomulyo adalah rumah bagi masyarakat agraris yang hidup dari kerja keras, gotong royong, dan harapan untuk masa depan yang lebih baik.</p>
             <div className="hero-actions">
               <Link href="/profil" className="button button-primary">Kenali Desa Kami <ArrowRight size={17} /></Link>
               <Link href="/layanan" className="button hero-button-ghost">Lihat Layanan</Link>
@@ -95,9 +95,9 @@ export default async function HomePage() {
             <div className="story-stamp"><Wheat size={28} /><span>Desa Agraris</span><strong>Pesawaran</strong></div>
           </div>
           <div className="story-copy">
-            <span className="eyebrow">Cerita Margo Mulyo</span>
+            <span className="eyebrow">Cerita Margomulyo</span>
             <h2>Perjalanan menuju kemuliaan dan kesejahteraan.</h2>
-            <p>Nama <strong>Margo Mulyo</strong> berakar dari bahasa Jawa: <em>margo</em> berarti jalan, dan <em>mulyo</em> berarti mulia atau sejahtera. Sebuah nama yang menjadi doa sekaligus arah pembangunan desa.</p>
+            <p>Nama <strong>Margomulyo</strong> berakar dari bahasa Jawa: <em>margo</em> berarti jalan, dan <em>mulyo</em> berarti mulia atau sejahtera. Sebuah nama yang menjadi doa sekaligus arah pembangunan desa.</p>
             <p>Dibangun oleh masyarakat transmigran melalui semangat gotong royong, desa ini tumbuh bersama lahan pertanian, kebun, dan usaha warga.</p>
             <div className="story-values"><span><Sprout size={18} /> Lahan yang produktif</span><span><Users size={18} /> Warga yang guyub</span></div>
             <Link href="/profil" className="text-link">Baca kisah desa <ArrowRight size={17} /></Link>
@@ -107,7 +107,7 @@ export default async function HomePage() {
 
       <section className="facts-section">
         <div className="container facts-layout">
-          <div className="facts-intro"><span className="eyebrow">Margo Mulyo dalam angka</span><h2>Data untuk pembangunan yang lebih tepat.</h2><Link href="/statistik" className="button button-light">Lihat statistik lengkap <ArrowRight size={16} /></Link></div>
+          <div className="facts-intro"><span className="eyebrow">Margomulyo dalam angka</span><h2>Data untuk pembangunan yang lebih tepat.</h2><Link href="/statistik" className="button button-light">Lihat statistik lengkap <ArrowRight size={16} /></Link></div>
           <div className="facts-grid">
             {homepageStats.map((item) => <div className="fact" key={item.label}><strong>{item.value}</strong><span>{item.label}</span><small>{item.note}</small></div>)}
           </div>
