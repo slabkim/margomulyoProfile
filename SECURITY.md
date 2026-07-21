@@ -1,4 +1,4 @@
-# Keamanan Website Desa Margo Mulyo
+# Keamanan Website Desa Margomulyo
 
 Tidak ada aplikasi yang dapat dijamin kebal dari seluruh serangan. Keamanan project ini menggunakan pertahanan berlapis dan tetap membutuhkan pemeliharaan rutin.
 

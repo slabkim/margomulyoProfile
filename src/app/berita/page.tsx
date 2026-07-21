@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { fallbackNewsArticles } from '@/lib/news';
 import { isSupabaseStorageUrl } from '@/lib/utils';
@@ -11,6 +12,7 @@ export const metadata = {
 };
 
 const categories = ['Pertanian', 'Pelayanan', 'Kegiatan'] as const;
+const PAGE_SIZE = 10;
 type Category = (typeof categories)[number];
 
 function isCategory(value: string | string[] | undefined): value is Category {
@@ -20,9 +22,9 @@ function isCategory(value: string | string[] | undefined): value is Category {
 export default async function BeritaPage({
   searchParams,
 }: {
-  searchParams: Promise<{ kategori?: string | string[]; cari?: string | string[] }>;
+  searchParams: Promise<{ kategori?: string | string[]; cari?: string | string[]; halaman?: string | string[] }>;
 }) {
-  const { kategori, cari } = await searchParams;
+  const { kategori, cari, halaman } = await searchParams;
   const activeCategory = isCategory(kategori) ? kategori : null;
   const searchQuery = typeof cari === 'string' ? cari.trim().slice(0, 100) : '';
   const supabase = await createClient();
@@ -43,6 +45,11 @@ export default async function BeritaPage({
         .some((value) => value?.toLowerCase().includes(normalizedQuery)),
     );
   }
+  const requestedPage = typeof halaman === 'string' && /^\d+$/.test(halaman) ? Math.max(Number(halaman), 1) : 1;
+  const totalPages = Math.max(Math.ceil(articles.length / PAGE_SIZE), 1);
+  const activePage = Math.min(requestedPage, totalPages);
+  const visibleArticles = articles.slice((activePage - 1) * PAGE_SIZE, activePage * PAGE_SIZE);
+  const pageHref = (page: number) => ({ pathname: '/berita', query: { ...(activeCategory ? { kategori: activeCategory } : {}), ...(searchQuery ? { cari: searchQuery } : {}), ...(page > 1 ? { halaman: page } : {}) } });
 
   return (
     <>
@@ -83,9 +90,10 @@ export default async function BeritaPage({
             </div>
             {searchQuery && <Link href={activeCategory ? { pathname: '/berita', query: { kategori: activeCategory } } : '/berita'}>Hapus pencarian</Link>}
           </form>
-          {articles.length ? (
+          {visibleArticles.length ? (
+            <>
             <div className="article-list">
-              {articles.map((article) => (
+              {visibleArticles.map((article) => (
                 <Link href={`/berita/${article.slug}`} className="article-item" key={article.id}>
                   <div className="article-photo">
                     <Image
@@ -107,6 +115,12 @@ export default async function BeritaPage({
                 </Link>
               ))}
             </div>
+            {totalPages > 1 && <nav className="content-pagination" aria-label="Paginasi berita">
+              {activePage > 1 ? <Link href={pageHref(activePage - 1)} aria-label="Halaman berita sebelumnya"><ChevronLeft size={17} />Sebelumnya</Link> : <span className="disabled"><ChevronLeft size={17} />Sebelumnya</span>}
+              <div>{Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => <Link href={pageHref(page)} className={page === activePage ? 'active' : undefined} aria-current={page === activePage ? 'page' : undefined} key={page}>{page}</Link>)}</div>
+              {activePage < totalPages ? <Link href={pageHref(activePage + 1)} aria-label="Halaman berita berikutnya">Berikutnya<ChevronRight size={17} /></Link> : <span className="disabled">Berikutnya<ChevronRight size={17} /></span>}
+            </nav>}
+            </>
           ) : (
             <div className="article-empty">
               <h2>Berita tidak ditemukan.</h2>

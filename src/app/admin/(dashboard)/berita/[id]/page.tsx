@@ -1,7 +1,30 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ImageUp, Save } from 'lucide-react';
+import { ArrowLeft, Save } from 'lucide-react';
+import ImageUploadPreview from '@/components/admin/ImageUploadPreview';
 import { createClient } from '@/lib/supabase/server';
 import { saveNews } from '../../../actions';
 
-export default async function EditNewsPage({params,searchParams}:{params:Promise<{id:string}>;searchParams:Promise<{error?:string}>}){const [{id},{error}]=await Promise.all([params,searchParams]);const supabase=await createClient();const {data}=await supabase.from('news_articles').select('*').eq('id',id).maybeSingle();if(!data)notFound();return <main className="admin-main"><header className="admin-page-head"><div><span>Berita desa</span><h1>Edit berita</h1><p>Perbarui konten atau status publikasi berita.</p></div></header>{error&&<div className="admin-alert admin-alert--error">{error}</div>}<form action={saveNews} className="admin-form"><input type="hidden" name="id" value={data.id}/><input type="hidden" name="current_image" value={data.image_url||''}/><label>Judul<input name="title" required defaultValue={data.title}/></label><label>Kategori<input name="category" defaultValue={data.category}/></label><label className="admin-field-full">Slug<input name="slug" defaultValue={data.slug}/></label><label className="admin-field-full">Ringkasan<textarea name="excerpt" defaultValue={data.excerpt||''}/></label><label className="admin-field-full">Isi berita<textarea className="editor" name="content" required defaultValue={data.content}/></label><label className="admin-field-full file-field"><span>Ganti gambar utama</span><div><ImageUp size={20}/><input name="image" type="file" accept="image/jpeg,image/png,image/webp"/></div><small>{data.image_url?'Kosongkan untuk mempertahankan gambar saat ini. ':''}JPG, PNG, atau WebP. Maksimal 5 MB.</small></label><label className="check-field admin-field-full"><input type="checkbox" name="is_published" defaultChecked={data.is_published}/> Publikasikan berita</label><div className="form-actions"><Link href="/admin/berita" className="admin-button">Batal</Link><button className="admin-button admin-button--primary"><Save size={16}/>Simpan perubahan</button></div></form></main>}
+export default async function EditNewsPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ error?: string }> }) {
+  const [{ id }, { error }] = await Promise.all([params, searchParams]);
+  const supabase = await createClient();
+  const { data } = await supabase.from('news_articles').select('*').eq('id', id).maybeSingle();
+  if (!data) notFound();
+
+  return <main className="admin-main">
+    <Link href="/admin/berita" className="admin-back-link"><ArrowLeft size={16} />Kembali ke berita</Link>
+    <header className="admin-page-head"><div><span>Berita desa</span><h1>Edit berita</h1><p>Perbarui konten atau status publikasi berita.</p></div></header>
+    {error && <div className="admin-alert admin-alert--error">{error}</div>}
+    <form action={saveNews} className="admin-form">
+      <input type="hidden" name="id" value={data.id} />
+      <label>Judul<input name="title" required defaultValue={data.title} /></label>
+      <label>Kategori<input name="category" defaultValue={data.category} /></label>
+      <label className="admin-field-full">Slug<input name="slug" defaultValue={data.slug} /></label>
+      <label className="admin-field-full">Ringkasan<textarea name="excerpt" defaultValue={data.excerpt || ''} /></label>
+      <label className="admin-field-full">Isi berita<textarea className="editor" name="content" required defaultValue={data.content} /></label>
+      <ImageUploadPreview label="Ganti gambar utama" variant="landscape" currentImage={data.image_url || undefined} currentAlt={`Gambar ${data.title}`} helperText="Kosongkan untuk mempertahankan gambar saat ini. JPG, PNG, atau WebP; maksimal 5 MB." />
+      <label className="check-field admin-field-full"><input type="checkbox" name="is_published" defaultChecked={data.is_published} /> Publikasikan berita</label>
+      <div className="form-actions"><Link href="/admin/berita" className="admin-button">Batal</Link><button className="admin-button admin-button--primary"><Save size={16} />Simpan perubahan</button></div>
+    </form>
+  </main>;
+}

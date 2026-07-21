@@ -32,17 +32,16 @@ function galleryGroup(album: string): GalleryFilter {
 export default async function GaleriPage({
   searchParams,
 }: {
-  searchParams: Promise<{ kategori?: string | string[]; cari?: string | string[] }>;
+  searchParams: Promise<{ kategori?: string | string[]; cari?: string | string[]; semua?: string | string[] }>;
 }) {
-  const { kategori, cari } = await searchParams;
+  const { kategori, cari, semua } = await searchParams;
   const activeFilter = isGalleryFilter(kategori) ? kategori : null;
   const searchQuery = typeof cari === 'string' ? cari.trim().slice(0, 100) : '';
   const supabase = await createClient();
   const { data } = await supabase
     .from('gallery_items')
     .select('id,title,album,image_url')
-    .order('created_at', { ascending: false })
-    .limit(12);
+    .order('created_at', { ascending: false });
 
   const allGallery = data?.length ? data : fallback;
   let gallery = activeFilter
@@ -54,6 +53,9 @@ export default async function GaleriPage({
       [item.title, item.album].some((value) => value.toLowerCase().includes(normalizedQuery)),
     );
   }
+  const showAll = semua === '1';
+  const visibleGallery = showAll ? gallery : gallery.slice(0, 10);
+  const revealHref = { pathname: '/galeri', query: { ...(activeFilter ? { kategori: activeFilter } : {}), ...(searchQuery ? { cari: searchQuery } : {}), semua: '1' } };
 
   return (
     <>
@@ -94,15 +96,19 @@ export default async function GaleriPage({
             </div>
             {searchQuery && <Link href={activeFilter ? { pathname: '/galeri', query: { kategori: activeFilter } } : '/galeri'}>Hapus pencarian</Link>}
           </form>
-          {gallery.length ? (
+          {visibleGallery.length ? (
+            <>
             <div className="gallery-grid">
-              {gallery.map((item) => (
+              {visibleGallery.map((item) => (
                 <figure className="gallery-item" key={item.id}>
                   <Image src={item.image_url || '/images/hero-bg.png'} alt={item.title} fill unoptimized={isSupabaseStorageUrl(item.image_url)} sizes="(max-width: 580px) 100vw, (max-width: 850px) 50vw, 40vw" />
                   <figcaption className="gallery-overlay"><strong>{item.title}</strong><span>{item.album}</span></figcaption>
                 </figure>
               ))}
             </div>
+            {!showAll && gallery.length > 10 && <div className="gallery-reveal"><p>Menampilkan 10 dari {gallery.length} foto.</p><Link href={revealHref} className="button button-dark">Lihat semuanya</Link></div>}
+            {showAll && gallery.length > 10 && <div className="gallery-reveal"><p>Semua {gallery.length} foto sedang ditampilkan.</p></div>}
+            </>
           ) : (
             <div className="article-empty">
               <h2>Galeri tidak ditemukan.</h2>

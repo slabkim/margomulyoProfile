@@ -28,6 +28,16 @@
 @media (max-width: 420px) { .page-crumb { gap: 6px; font-size: .62rem; letter-spacing: .09em; }.info-row { align-items: flex-start; flex-direction: column; gap: 4px; padding: 17px 19px; }.info-row strong { text-align: left; }.content-search > div { grid-template-columns: minmax(0,1fr) auto; }.content-search input[type="search"] { padding-inline: 12px; }.content-search button { padding-inline: 14px; }.news-detail-hero h1 { font-size: clamp(2.25rem,11vw,3rem); }.news-detail-content { font-size: .94rem; line-height: 1.8; }.notice { padding: 17px 18px; }.steps { grid-template-columns: 1fr; }.step { border-left: 0; border-bottom: 1px solid rgba(255,255,255,.15); }.step:last-child { border-bottom: 0; } }
 .article-photo > img { width: 100%; height: 100%; object-fit: cover; }
 
+.content-pagination { display: grid; grid-template-columns:minmax(120px,1fr) auto minmax(120px,1fr); gap:20px; align-items:center; margin-top:42px; }
+.content-pagination > a,.content-pagination > span { display:inline-flex; align-items:center; gap:7px; color:var(--forest-900); font-size:.73rem; font-weight:800; }
+.content-pagination > a:last-child,.content-pagination > span:last-child { justify-self:end; }
+.content-pagination > .disabled { opacity:.35; }
+.content-pagination > div { display:flex; justify-content:center; gap:6px; flex-wrap:wrap; }
+.content-pagination > div a { display:grid; width:38px; height:38px; place-items:center; color:var(--muted); border:1px solid var(--line); border-radius:50%; background:var(--white); font-size:.7rem; font-weight:800; }
+.content-pagination > div a:hover,.content-pagination > div a.active { color:var(--white); border-color:var(--forest-900); background:var(--forest-900); }
+.gallery-reveal { display:flex; align-items:center; justify-content:center; flex-direction:column; gap:14px; margin-top:38px; text-align:center; }
+.gallery-reveal p { margin:0; font-size:.75rem; }
+
 /* Prevent intrinsic grid/flex widths from expanding the mobile viewport. */
 .split-intro > *, .feature-grid > *, .vision-grid > *, .info-grid > *,
 .listing-head > *, .article-list > *, .gallery-grid > *, .service-list > *,
@@ -59,6 +69,12 @@
   .filter-chips { gap: 6px; }
   .filter-chips a { padding-inline: 11px; }
   .bar-row { grid-template-columns: 62px minmax(0,1fr) minmax(38px,auto); }
+}
+
+@media (max-width: 580px) {
+  .content-pagination { grid-template-columns:1fr 1fr; gap:18px 10px; }
+  .content-pagination > div { grid-column:1/-1; grid-row:1; }
+  .content-pagination > a,.content-pagination > span { grid-row:2; }
 }
 
 .official-data-banner { display: flex; align-items: center; gap: 14px; margin-bottom: 25px; padding: 17px 20px; color: var(--forest-950); border: 1px solid #cbdacf; background: rgba(255,255,255,.84); }
