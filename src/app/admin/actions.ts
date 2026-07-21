@@ -8,7 +8,9 @@ import { AGE_GROUP_OPTIONS, HOME_STATISTIC_OPTIONS, calculateAgeGroupCounts, can
 
 const IMAGE_BUCKET = 'village-media';
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const MAX_IMAGE_PIXELS = 40_000_000;
 const IMAGE_INPUT_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif', 'avif', 'tif', 'tiff', 'gif']);
+const HEIC_INPUT_EXTENSIONS = new Set(['heic', 'heif']);
 
 export type AuthState = { error?: string } | undefined;
 
@@ -55,6 +57,31 @@ function limitedValue(formData: FormData, key: string, maxLength: number) {
 function slugify(text: string) { return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
 function isUuid(valueToCheck: string) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(valueToCheck); }
 
+async function convertImageToWebp(input: Buffer, extension: string) {
+  if (HEIC_INPUT_EXTENSIONS.has(extension)) {
+    // Sharp bawaan Vercel tidak selalu menyertakan codec HEVC. Decode HEIC/HEIF
+    // menjadi piksel RGBA terlebih dahulu, baru gunakan Sharp untuk kompresi WebP.
+    const { default: decodeHeic } = await import('heic-decode');
+    const decoded = await decodeHeic({ buffer: input });
+    const pixelCount = decoded.width * decoded.height;
+
+    if (!Number.isSafeInteger(pixelCount) || pixelCount <= 0 || pixelCount > MAX_IMAGE_PIXELS) {
+      throw new Error('Invalid HEIC dimensions');
+    }
+
+    return sharp(Buffer.from(decoded.data), {
+      raw: { width: decoded.width, height: decoded.height, channels: 4 },
+    })
+      .webp({ quality: 85, effort: 4 })
+      .toBuffer();
+  }
+
+  return sharp(input, { failOn: 'error', limitInputPixels: MAX_IMAGE_PIXELS, pages: 1 })
+    .rotate()
+    .webp({ quality: 85, effort: 4 })
+    .toBuffer();
+}
+
 async function uploadImage(supabase: Awaited<ReturnType<typeof createClient>>, formData: FormData, folder: string) {
   const image = formData.get('image');
   if (!(image instanceof File) || image.size === 0) return { url: null, path: null, error: null };
@@ -65,12 +92,12 @@ async function uploadImage(supabase: Awaited<ReturnType<typeof createClient>>, f
   let convertedImage: Buffer;
   try {
     const input = Buffer.from(await image.arrayBuffer());
-    convertedImage = await sharp(input, { failOn: 'error', limitInputPixels: 40_000_000, pages: 1 })
-      .rotate()
-      .webp({ quality: 85, effort: 4 })
-      .toBuffer();
+    convertedImage = await convertImageToWebp(input, extension);
   } catch {
-    return { url: null, path: null, error: 'File tidak dapat dibaca sebagai gambar. Untuk HEIC/HEIF, pastikan file tidak rusak atau terenkripsi.' };
+    const error = HEIC_INPUT_EXTENSIONS.has(extension)
+      ? 'File HEIC/HEIF tidak dapat didekode. Pastikan file selesai disalin, tidak rusak, dan benar-benar berformat HEIC/HEIF.'
+      : 'File tidak dapat dibaca sebagai gambar. Pastikan file tidak rusak dan formatnya sesuai dengan ekstensi file.';
+    return { url: null, path: null, error };
   }
   if (convertedImage.length > MAX_IMAGE_SIZE) return { url: null, path: null, error: 'Ukuran gambar setelah diproses masih melebihi 5 MB. Pilih gambar dengan resolusi lebih kecil.' };
 
