@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Landmark, Menu, X, ArrowUpRight } from 'lucide-react';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
+import PesawaranLogo from './PesawaranLogo';
 import './Navbar.css';
 
 const navLinks = [
@@ -56,7 +57,7 @@ export default function Navbar() {
     <header className={`site-header ${homeTop ? 'site-header--overlay' : 'site-header--solid'} ${open ? 'site-header--menu-open' : ''}`}>
       <div className="nav-shell">
         <Link href="/" className="brand" aria-label="Beranda Desa Margo Mulyo" onClick={() => setOpen(false)}>
-          <span className="brand-mark"><Landmark size={21} /></span>
+          <span className="brand-mark"><PesawaranLogo priority sizes="43px" /></span>
           <span><strong>Margo Mulyo</strong><small>Kabupaten Pesawaran</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Navigasi utama">

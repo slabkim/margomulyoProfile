@@ -1,7 +1,8 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { Save } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { isManagedStatisticLabel } from '@/lib/statistics';
 import { saveStatistic } from '../../../actions';
 
 const categories=['Ringkasan','Kelompok Usia','Mata Pencaharian','Pendidikan','Wilayah'];
@@ -11,6 +12,7 @@ export default async function EditStatisticPage({params,searchParams}:{params:Pr
   const supabase=await createClient();
   const {data}=await supabase.from('population_stats').select('*').eq('id',id).maybeSingle();
   if(!data)notFound();
+  if(isManagedStatisticLabel(data.label))redirect('/admin/statistik?error=Data utama dan kelompok usia harus diedit melalui formulir terpadu');
 
   return <main className="admin-main">
     <header className="admin-page-head"><div><span>Data desa</span><h1>Edit statistik</h1><p>Perbarui indikator, nilai, kategori, atau tahun data.</p></div></header>

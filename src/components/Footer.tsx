@@ -1,10 +1,11 @@
 import Link from 'next/link';
-import { ArrowUpRight, Landmark, MapPin, Mail, Clock } from 'lucide-react';
+import { ArrowUpRight, MapPin, Mail, Clock } from 'lucide-react';
+import PesawaranLogo from './PesawaranLogo';
 import './Footer.css';
 
 const links = [
   { label: 'Profil Desa', href: '/profil' }, { label: 'Berita Desa', href: '/berita' },
-  { label: 'Galeri Kegiatan', href: '/galeri' }, { label: 'Statistik', href: '/statistik' },
+  { label: 'Galeri Kegiatan', href: '/galeri' }, { label: 'Data Desa', href: '/statistik' },
   { label: 'Layanan Publik', href: '/layanan' }, { label: 'Kontak', href: '/kontak' },
 ];
 
@@ -13,7 +14,7 @@ export default function Footer() {
     <footer className="site-footer">
       <div className="container footer-top">
         <div className="footer-intro">
-          <div className="footer-emblem"><Landmark size={28} /></div>
+          <div className="footer-emblem"><PesawaranLogo sizes="58px" /></div>
           <p className="eyebrow">Portal resmi desa</p>
           <h2>Informasi terbuka,<br />pelayanan lebih dekat.</h2>
         </div>
@@ -25,7 +26,7 @@ export default function Footer() {
           <p className="footer-label">Kantor Desa</p>
           <div><MapPin size={17} /><span>Desa Margo Mulyo, Kec. Tegineneng,<br />Kab. Pesawaran, Lampung</span></div>
           <div><Mail size={17} /><span>desa.margomulyo@pesawaran.go.id</span></div>
-          <div><Clock size={17} /><span>Senin–Jumat, 08.00–16.00 WIB</span></div>
+          <div><Clock size={17} /><span>Senin–Jumat, 08.00–13.00 WIB</span></div>
         </div>
       </div>
       <div className="container footer-bottom">

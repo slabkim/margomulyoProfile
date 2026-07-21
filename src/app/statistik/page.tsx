@@ -1,4 +1,46 @@
+import { Database, FileSpreadsheet, Map, Users } from 'lucide-react';
+import VillagePotentialExplorer from '@/components/VillagePotentialExplorer';
+import VillageStatisticsDashboard from '@/components/VillageStatisticsDashboard';
+import { createClient } from '@/lib/supabase/server';
+import { buildHomepageStatistics } from '@/lib/statistics';
+import {
+  OFFICIAL_DATA_YEAR, OFFICIAL_HAMLET_DEMOGRAPHICS, OFFICIAL_POPULATION_STATS,
+  OFFICIAL_POTENTIALS, POTENTIAL_DATA_YEAR, type HamletDemographic, type VillagePotential,
+} from '@/lib/village-data';
 import '../public-pages.css';
-export const metadata = { title: 'Statistik Desa', description: 'Data kependudukan dan wilayah Desa Margo Mulyo.' };
-const age=[['0–14 tahun',22],['15–24 tahun',18],['25–44 tahun',34],['45–59 tahun',17],['60+ tahun',9]]; const jobs=[['Petani',64],['Wiraswasta',15],['Karyawan',11],['Lainnya',10]];
-export default function StatistikPage(){return <><header className="page-hero" data-index="04"><div className="container"><div className="page-crumb">Beranda <span>/</span> Statistik</div><h1>Desa dalam data.</h1><p>Gambaran ringkas kondisi penduduk dan wilayah sebagai dasar perencanaan pembangunan yang lebih tepat.</p></div></header><section className="content-section surface-grid"><div className="container"><div className="stat-summary"><div><strong>3.700+</strong><span>Jiwa penduduk</span></div><div><strong>1.433</strong><span>Kepala keluarga</span></div><div><strong>6</strong><span>Dusun</span></div><div><strong>6,89</strong><span>km² luas wilayah</span></div></div><div className="chart-layout"><div className="chart-card"><span className="eyebrow">Demografi</span><h2>Kelompok usia</h2>{age.map(([label,value])=><div className="bar-row" key={label}><span>{label}</span><div className="bar-track"><div className="bar-fill" style={{width:`${Number(value)*2.5}%`}}/></div><strong>{value}%</strong></div>)}</div><div className="chart-card"><span className="eyebrow">Ekonomi</span><h2>Mata pencaharian</h2>{jobs.map(([label,value])=><div className="bar-row" key={label}><span>{label}</span><div className="bar-track"><div className="bar-fill" style={{width:`${value}%`}}/></div><strong>{value}%</strong></div>)}</div></div><div className="notice">Angka demografi rinci di halaman ini adalah ilustrasi tampilan. Publikasi final harus menggunakan data resmi desa yang sudah diverifikasi.</div></div></section></>}
+
+export const metadata = {
+  title: 'Data Desa',
+  description: 'Data resmi kependudukan, wilayah, dan potensi Desa Margo Mulyo.',
+};
+
+export default async function StatistikPage() {
+  const supabase = await createClient();
+  const [statisticsResult, hamletsResult, potentialsResult] = await Promise.all([
+    supabase.from('population_stats').select('category,label,value,year,updated_at').order('year', { ascending: false }),
+    supabase.from('hamlet_demographics').select('*').eq('year', OFFICIAL_DATA_YEAR).order('name'),
+    supabase.from('village_potentials').select('section,label,value_text,numeric_value,unit,source_year,sort_order').order('sort_order'),
+  ]);
+
+  const databaseReady = Boolean(hamletsResult.data?.length);
+  const statistics = databaseReady && statisticsResult.data?.length ? statisticsResult.data : OFFICIAL_POPULATION_STATS;
+  const hamlets = (databaseReady ? hamletsResult.data : OFFICIAL_HAMLET_DEMOGRAPHICS) as HamletDemographic[];
+  const potentials = (potentialsResult.data?.length ? potentialsResult.data.map((item) => ({ ...item, numeric_value: item.numeric_value === null ? null : Number(item.numeric_value) })) : OFFICIAL_POTENTIALS) as VillagePotential[];
+  const summary = buildHomepageStatistics(statistics);
+
+  return <>
+    <header className="page-hero" data-index="04"><div className="container"><div className="page-crumb">Beranda <span>/</span> Data Desa</div><h1>Data nyata, desa terbaca.</h1><p>Jelajahi kondisi penduduk, rincian setiap dusun, batas wilayah, penggunaan lahan, dan potensi Margo Mulyo berdasarkan dokumen resmi desa.</p></div></header>
+
+    <section className="content-section surface-grid"><div className="container">
+      <div className="official-data-banner"><FileSpreadsheet size={22} /><div><strong>Rekap resmi operator desa</strong><span>Data penduduk tahun {OFFICIAL_DATA_YEAR} · Data potensi dari Profil Desa tahun {POTENTIAL_DATA_YEAR}</span></div><i>{databaseReady ? 'Terhubung ke database' : 'Data resmi lokal'}</i></div>
+      <div className="stat-summary official-stat-summary">{summary.map((item, index) => <div key={item.label}>{index === 0 ? <Users size={20} /> : index === 1 ? <Database size={20} /> : <Map size={20} />}<strong>{item.value}</strong><span>{item.summaryLabel}</span>{item.year && <small>Data tahun {item.year}</small>}</div>)}</div>
+      <VillageStatisticsDashboard hamlets={hamlets} />
+    </div></section>
+
+    <section className="content-section"><div className="container">
+      <div className="section-heading"><span className="eyebrow">Potensi & wilayah</span><h2>Aset desa dalam satu tampilan.</h2><p>Telusuri batas administratif, legalitas wilayah, penggunaan lahan, karakter tanah, perkebunan, dan fasilitas umum yang tercatat dalam Profil Desa Margomulyo Tahun 2019.</p></div>
+      <VillagePotentialExplorer potentials={potentials} />
+      <div className="notice">Sumber: Rekap Data Penduduk Desa Margomulyo Tahun 2026 dan Profil Desa Margomulyo Tahun 2019 yang diberikan operator desa. Angka ditampilkan sesuai dokumen sumber.</div>
+    </div></section>
+  </>;
+}

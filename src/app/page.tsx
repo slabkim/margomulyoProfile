@@ -6,32 +6,36 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { fallbackNewsArticles } from '@/lib/news';
+import { buildHomepageStatistics } from '@/lib/statistics';
 import { isSupabaseStorageUrl } from '@/lib/utils';
+import { OFFICIAL_DATA_YEAR, OFFICIAL_POPULATION_STATS } from '@/lib/village-data';
 import './page.css';
 
 const services = [
   { icon: FileText, title: 'Administrasi Warga', text: 'Pengantar KTP, KK, pindah datang, dan dokumen kependudukan.', href: '/layanan' },
   { icon: HeartPulse, title: 'Kesehatan & Sosial', text: 'Informasi Posyandu, bantuan sosial, dan layanan masyarakat.', href: '/layanan' },
   { icon: Sprout, title: 'Pertanian Desa', text: 'Program kelompok tani, musim tanam, dan informasi bantuan.', href: '/berita' },
-  { icon: Store, title: 'UMKM & Potensi', text: 'Temukan produk, usaha, dan potensi ekonomi warga desa.', href: '/profil' },
-];
-
-const stats = [
-  { value: '3.700+', label: 'Penduduk', note: 'jiwa' },
-  { value: '1.433', label: 'Kepala keluarga', note: 'KK' },
-  { value: '6', label: 'Wilayah', note: 'dusun' },
-  { value: '6,89', label: 'Luas desa', note: 'km²' },
+  { icon: Store, title: 'Potensi Desa', text: 'Jelajahi penggunaan lahan, pertanian, fasilitas umum, dan aset wilayah.', href: '/statistik' },
 ];
 
 export default async function HomePage() {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from('news_articles')
-    .select('id,slug,category,created_at,title,excerpt,image_url')
-    .eq('is_published', true)
-    .order('created_at', { ascending: false })
-    .limit(3);
-  const news = data?.length ? data : fallbackNewsArticles.slice(0, 3);
+  const [newsResult, statisticsResult, officialDataResult] = await Promise.all([
+    supabase
+      .from('news_articles')
+      .select('id,slug,category,created_at,title,excerpt,image_url')
+      .eq('is_published', true)
+      .order('created_at', { ascending: false })
+      .limit(3),
+    supabase
+      .from('population_stats')
+      .select('label,value,year,updated_at')
+      .order('year', { ascending: false })
+      .order('updated_at', { ascending: false }),
+    supabase.from('hamlet_demographics').select('id', { count: 'exact', head: true }).eq('year', OFFICIAL_DATA_YEAR),
+  ]);
+  const news = newsResult.data?.length ? newsResult.data : fallbackNewsArticles.slice(0, 3);
+  const homepageStats = buildHomepageStatistics(officialDataResult.count ? (statisticsResult.data ?? []) : OFFICIAL_POPULATION_STATS);
 
   return (
     <>
@@ -105,7 +109,7 @@ export default async function HomePage() {
         <div className="container facts-layout">
           <div className="facts-intro"><span className="eyebrow">Margo Mulyo dalam angka</span><h2>Data untuk pembangunan yang lebih tepat.</h2><Link href="/statistik" className="button button-light">Lihat statistik lengkap <ArrowRight size={16} /></Link></div>
           <div className="facts-grid">
-            {stats.map((item) => <div className="fact" key={item.label}><strong>{item.value}</strong><span>{item.label}</span><small>{item.note}</small></div>)}
+            {homepageStats.map((item) => <div className="fact" key={item.label}><strong>{item.value}</strong><span>{item.label}</span><small>{item.note}</small></div>)}
           </div>
         </div>
       </section>
@@ -125,7 +129,7 @@ export default async function HomePage() {
       </section>
 
       <section className="closing-cta surface-grid">
-        <div className="container closing-inner"><div><span className="eyebrow">Kantor desa terbuka untuk Anda</span><h2>Butuh bantuan atau informasi lebih lanjut?</h2><p>Datang langsung pada jam pelayanan atau hubungi perangkat desa melalui kanal resmi.</p></div><div className="closing-actions"><Link href="/kontak" className="button button-primary">Hubungi Kami <ArrowRight size={17} /></Link><span><Clock3 size={17} /> Senin–Jumat<br /><strong>08.00–16.00 WIB</strong></span></div></div>
+        <div className="container closing-inner"><div><span className="eyebrow">Kantor desa terbuka untuk Anda</span><h2>Butuh bantuan atau informasi lebih lanjut?</h2><p>Datang langsung pada jam pelayanan atau hubungi perangkat desa melalui kanal resmi.</p></div><div className="closing-actions"><Link href="/kontak" className="button button-primary">Hubungi Kami <ArrowRight size={17} /></Link><span><Clock3 size={17} /> Senin–Jumat<br /><strong>08.00–13.00 WIB</strong></span></div></div>
       </section>
     </>
   );

@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { AGE_GROUP_OPTIONS, HOME_STATISTIC_OPTIONS, calculateAgeGroupCounts, canonicalManagedStatisticLabel } from '@/lib/statistics';
 
 const IMAGE_BUCKET = 'village-media';
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
@@ -177,19 +178,103 @@ export async function saveStatistic(formData: FormData) {
   const supabase = await requireAdmin();
   const id = value(formData, 'id');
   if (id && !isUuid(id)) redirect('/admin/statistik?error=ID statistik tidak valid');
+  if (id) {
+    const { data: existingStatistic } = await supabase.from('population_stats').select('label').eq('id', id).maybeSingle();
+    if (existingStatistic && canonicalManagedStatisticLabel(existingStatistic.label)) {
+      redirect('/admin/statistik?error=Data utama dan kelompok usia harus diedit melalui formulir terpadu');
+    }
+  }
   const errorPath = id ? `/admin/statistik/${id}` : '/admin/statistik';
+  const mode = value(formData, 'mode');
   const label = limitedValue(formData, 'label', 120);
-  const category = limitedValue(formData, 'category', 80);
-  const numericValue = Number(value(formData, 'value'));
-  const year = Number(value(formData, 'year'));
-  if (!label || category === null || !Number.isFinite(numericValue) || numericValue < 0 || numericValue > 1_000_000_000 || !Number.isInteger(year) || year < 1900 || year > new Date().getFullYear() + 1) redirect(`${errorPath}?error=Data statistik tidak valid`);
+  const requestedCategory = limitedValue(formData, 'category', 80);
+  const category = mode === 'homepage' ? 'Ringkasan' : requestedCategory;
+  const rawNumericValue = value(formData, 'value');
+  const rawYear = value(formData, 'year');
+  const numericValue = Number(rawNumericValue);
+  const year = Number(rawYear);
+  const validHomepageLabel = HOME_STATISTIC_OPTIONS.some((option) => option.label === label);
+  if (!label || category === null || !rawNumericValue || !rawYear || (mode === 'homepage' && !validHomepageLabel) || !Number.isFinite(numericValue) || numericValue < 0 || numericValue > 1_000_000_000 || !Number.isInteger(year) || year < 1900 || year > new Date().getFullYear() + 1) redirect(`${errorPath}?error=Data statistik tidak valid`);
   const payload = { category: category || 'Umum', label, value: numericValue, year, updated_at: new Date().toISOString() };
-  const { error } = id
-    ? await supabase.from('population_stats').update(payload).eq('id', id)
+  let targetId = id;
+  if (!targetId) {
+    const { data: existing } = await supabase
+      .from('population_stats')
+      .select('id')
+      .eq('category', category || 'Umum')
+      .eq('label', label)
+      .eq('year', year)
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    targetId = existing?.id || '';
+  }
+  const { error } = targetId
+    ? await supabase.from('population_stats').update(payload).eq('id', targetId)
     : await supabase.from('population_stats').insert(payload);
   if (error) redirect(`${errorPath}?error=${encodeURIComponent(error.message)}`);
-  revalidatePath('/statistik'); revalidatePath('/admin'); revalidatePath('/admin/statistik');
-  redirect(`/admin/statistik?success=${id ? 'Data statistik berhasil diperbarui' : 'Data statistik berhasil ditambahkan'}`);
+  revalidatePath('/'); revalidatePath('/statistik'); revalidatePath('/admin'); revalidatePath('/admin/statistik');
+  redirect(`/admin/statistik?success=${mode === 'homepage' ? 'Ringkasan beranda berhasil diperbarui' : 'Data statistik berhasil disimpan'}`);
+}
+
+export async function saveVillageStatistics(formData: FormData) {
+  const supabase = await requireAdmin();
+  const rawYear = value(formData, 'year');
+  const rawPopulation = value(formData, 'population');
+  const rawHouseholds = value(formData, 'households');
+  const rawHamlets = value(formData, 'hamlets');
+  const rawArea = value(formData, 'area');
+  const year = Number(rawYear);
+  const population = Number(rawPopulation);
+  const households = Number(rawHouseholds);
+  const hamlets = Number(rawHamlets);
+  const area = Number(rawArea);
+  const rawPercentages = AGE_GROUP_OPTIONS.map((option) => value(formData, option.field));
+  const percentages = rawPercentages.map(Number);
+  const percentageTotal = percentages.reduce((sum, percentage) => sum + percentage, 0);
+  const maximumYear = new Date().getFullYear() + 1;
+
+  const invalidMainValues = !rawYear || !rawPopulation || !rawHouseholds || !rawHamlets || !rawArea
+    || !Number.isInteger(year) || year < 1900 || year > maximumYear
+    || !Number.isInteger(population) || population <= 0 || population > 1_000_000_000
+    || !Number.isInteger(households) || households < 0 || households > population
+    || !Number.isInteger(hamlets) || hamlets <= 0 || hamlets > 100_000
+    || !Number.isFinite(area) || area <= 0 || area > 1_000_000_000;
+  const invalidPercentages = rawPercentages.some((percentage) => percentage === '')
+    || percentages.some((percentage) => !Number.isFinite(percentage) || percentage < 0 || percentage > 100)
+    || Math.abs(percentageTotal - 100) > 0.01;
+
+  if (invalidMainValues) redirect('/admin/statistik?error=Data utama belum lengkap atau nilainya tidak valid');
+  if (invalidPercentages) redirect(`/admin/statistik?error=${encodeURIComponent('Total persentase kelompok usia harus tepat 100%')}`);
+
+  const ageCounts = calculateAgeGroupCounts(population, percentages);
+  const now = new Date().toISOString();
+  const records: Array<{ category: string; label: string; value: number; year: number; updated_at: string }> = [
+    { category: 'Ringkasan', label: HOME_STATISTIC_OPTIONS[0].label, value: population, year, updated_at: now },
+    { category: 'Ringkasan', label: HOME_STATISTIC_OPTIONS[1].label, value: households, year, updated_at: now },
+    { category: 'Ringkasan', label: HOME_STATISTIC_OPTIONS[2].label, value: hamlets, year, updated_at: now },
+    { category: 'Ringkasan', label: HOME_STATISTIC_OPTIONS[3].label, value: area, year, updated_at: now },
+    ...AGE_GROUP_OPTIONS.map((option, index) => ({ category: 'Kelompok Usia', label: option.label, value: ageCounts[index], year, updated_at: now })),
+  ];
+
+  const { data: existingRows, error: readError } = await supabase
+    .from('population_stats')
+    .select('id,label')
+    .eq('year', year);
+  if (readError) redirect(`/admin/statistik?error=${encodeURIComponent(readError.message)}`);
+
+  const operations = records.map((record) => {
+    const existing = existingRows?.find((row) => canonicalManagedStatisticLabel(row.label) === record.label);
+    return existing
+      ? supabase.from('population_stats').update(record).eq('id', existing.id)
+      : supabase.from('population_stats').insert(record);
+  });
+  const results = await Promise.all(operations);
+  const writeError = results.find((result) => result.error)?.error;
+  if (writeError) redirect(`/admin/statistik?error=${encodeURIComponent(writeError.message)}`);
+
+  revalidatePath('/'); revalidatePath('/statistik'); revalidatePath('/admin'); revalidatePath('/admin/statistik');
+  redirect('/admin/statistik?success=Data utama dan kelompok usia berhasil diselaraskan');
 }
 
 export async function deleteStatistic(formData: FormData) {
@@ -198,5 +283,70 @@ export async function deleteStatistic(formData: FormData) {
   if (!isUuid(id)) redirect('/admin/statistik?error=ID statistik tidak valid');
   const { error } = await supabase.from('population_stats').delete().eq('id', id);
   if (error) redirect(`/admin/statistik?error=${encodeURIComponent(error.message)}`);
-  revalidatePath('/statistik'); revalidatePath('/admin'); revalidatePath('/admin/statistik');
+  revalidatePath('/'); revalidatePath('/statistik'); revalidatePath('/admin'); revalidatePath('/admin/statistik');
+}
+
+export async function saveVillageHead(formData: FormData) {
+  const supabase = await requireAdmin();
+  const id = value(formData, 'id');
+  if (id && !isUuid(id)) redirect('/admin/kepala-desa?error=ID kepala desa tidak valid');
+
+  const errorPath = id ? `/admin/kepala-desa/${id}` : '/admin/kepala-desa';
+  const name = limitedValue(formData, 'name', 120);
+  const profile = limitedValue(formData, 'profile', 2000);
+  const rawStartYear = value(formData, 'start_year');
+  const rawEndYear = value(formData, 'end_year');
+  const startYear = Number(rawStartYear);
+  const endYear = Number(rawEndYear);
+  const invalidPeriod = !rawStartYear || !rawEndYear || !Number.isInteger(startYear) || !Number.isInteger(endYear)
+    || startYear < 1900 || endYear > 2100 || endYear < startYear;
+
+  if (!name || profile === null || invalidPeriod) {
+    redirect(`${errorPath}?error=${encodeURIComponent('Nama, periode, atau profil kepala desa tidak valid')}`);
+  }
+
+  const { data: existingHead } = id
+    ? await supabase.from('village_heads').select('image_url').eq('id', id).maybeSingle()
+    : { data: null };
+  const upload = await uploadImage(supabase, formData, 'village-heads');
+  if (upload.error) redirect(`${errorPath}?error=${encodeURIComponent(upload.error)}`);
+
+  const imageUrl = upload.url || existingHead?.image_url;
+  if (!imageUrl) redirect(`${errorPath}?error=${encodeURIComponent('Foto kepala desa wajib dipilih')}`);
+
+  const payload = {
+    name,
+    start_year: startYear,
+    end_year: endYear,
+    profile: profile || '',
+    image_url: imageUrl,
+    is_published: formData.get('is_published') === 'on',
+    is_current: formData.get('is_current') === 'on',
+    updated_at: new Date().toISOString(),
+  };
+  const { error } = id
+    ? await supabase.from('village_heads').update(payload).eq('id', id)
+    : await supabase.from('village_heads').insert(payload);
+
+  if (error) {
+    if (upload.path) await supabase.storage.from(IMAGE_BUCKET).remove([upload.path]);
+    redirect(`${errorPath}?error=${encodeURIComponent(error.message)}`);
+  }
+  if (upload.url && existingHead?.image_url) await removeImage(supabase, existingHead.image_url);
+
+  revalidatePath('/profil'); revalidatePath('/admin'); revalidatePath('/admin/kepala-desa');
+  redirect(`/admin/kepala-desa?success=${encodeURIComponent(id ? 'Profil kepala desa berhasil diperbarui' : 'Kepala desa berhasil ditambahkan')}`);
+}
+
+export async function deleteVillageHead(formData: FormData) {
+  const supabase = await requireAdmin();
+  const id = value(formData, 'id');
+  if (!isUuid(id)) redirect('/admin/kepala-desa?error=ID kepala desa tidak valid');
+
+  const { data: head } = await supabase.from('village_heads').select('image_url').eq('id', id).maybeSingle();
+  const { error } = await supabase.from('village_heads').delete().eq('id', id);
+  if (error) redirect(`/admin/kepala-desa?error=${encodeURIComponent(error.message)}`);
+  await removeImage(supabase, head?.image_url);
+
+  revalidatePath('/profil'); revalidatePath('/admin'); revalidatePath('/admin/kepala-desa');
 }
