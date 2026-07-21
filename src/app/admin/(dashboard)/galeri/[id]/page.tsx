@@ -20,7 +20,7 @@ export default async function EditGalleryPage({params,searchParams}:{params:Prom
       <label>Judul foto<input name="title" required defaultValue={data.title}/></label>
       <label>Album<input name="album" defaultValue={data.album}/></label>
       <label className="admin-field-full">Keterangan<textarea name="description" defaultValue={data.description||''}/></label>
-      <ImageUploadPreview label="Ganti gambar" variant="landscape" currentImage={data.image_url} currentAlt={`Gambar ${data.title}`} helperText="Kosongkan untuk mempertahankan gambar saat ini. JPG, PNG, atau WebP; maksimal 5 MB."/>
+      <ImageUploadPreview label="Ganti gambar" variant="landscape" currentImage={data.image_url} currentAlt={`Gambar ${data.title}`} helperText="Kosongkan untuk mempertahankan gambar saat ini. Mendukung JPG, PNG, WebP, HEIC/HEIF, AVIF, TIFF, dan GIF; maksimal 5 MB."/>
       <div className="form-actions"><Link href="/admin/galeri" className="admin-button">Batal</Link><button className="admin-button admin-button--primary"><Save size={16}/>Simpan perubahan</button></div>
     </form>
   </main>;

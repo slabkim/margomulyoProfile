@@ -22,7 +22,7 @@ export default async function EditNewsPage({ params, searchParams }: { params: P
       <label className="admin-field-full">Slug<input name="slug" defaultValue={data.slug} /></label>
       <label className="admin-field-full">Ringkasan<textarea name="excerpt" defaultValue={data.excerpt || ''} /></label>
       <label className="admin-field-full">Isi berita<textarea className="editor" name="content" required defaultValue={data.content} /></label>
-      <ImageUploadPreview label="Ganti gambar utama" variant="landscape" currentImage={data.image_url || undefined} currentAlt={`Gambar ${data.title}`} helperText="Kosongkan untuk mempertahankan gambar saat ini. JPG, PNG, atau WebP; maksimal 5 MB." />
+      <ImageUploadPreview label="Ganti gambar utama" variant="landscape" currentImage={data.image_url || undefined} currentAlt={`Gambar ${data.title}`} helperText="Kosongkan untuk mempertahankan gambar saat ini. Mendukung JPG, PNG, WebP, HEIC/HEIF, AVIF, TIFF, dan GIF; maksimal 5 MB." />
       <label className="check-field admin-field-full"><input type="checkbox" name="is_published" defaultChecked={data.is_published} /> Publikasikan berita</label>
       <div className="form-actions"><Link href="/admin/berita" className="admin-button">Batal</Link><button className="admin-button admin-button--primary"><Save size={16} />Simpan perubahan</button></div>
     </form>

@@ -2,16 +2,13 @@
 
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
+import sharp from 'sharp';
 import { createClient } from '@/lib/supabase/server';
 import { AGE_GROUP_OPTIONS, HOME_STATISTIC_OPTIONS, calculateAgeGroupCounts, canonicalManagedStatisticLabel } from '@/lib/statistics';
 
 const IMAGE_BUCKET = 'village-media';
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
-const IMAGE_EXTENSIONS: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/webp': 'webp',
-};
+const IMAGE_INPUT_EXTENSIONS = new Set(['jpg', 'jpeg', 'png', 'webp', 'heic', 'heif', 'avif', 'tif', 'tiff', 'gif']);
 
 export type AuthState = { error?: string } | undefined;
 
@@ -58,25 +55,28 @@ function limitedValue(formData: FormData, key: string, maxLength: number) {
 function slugify(text: string) { return text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''); }
 function isUuid(valueToCheck: string) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(valueToCheck); }
 
-function hasValidImageSignature(bytes: Uint8Array, mimeType: string) {
-  if (mimeType === 'image/jpeg') return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
-  if (mimeType === 'image/png') return bytes.length >= 8 && [0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a].every((byte, index) => bytes[index] === byte);
-  if (mimeType === 'image/webp') return bytes.length >= 12 && String.fromCharCode(...bytes.slice(0, 4)) === 'RIFF' && String.fromCharCode(...bytes.slice(8, 12)) === 'WEBP';
-  return false;
-}
-
 async function uploadImage(supabase: Awaited<ReturnType<typeof createClient>>, formData: FormData, folder: string) {
   const image = formData.get('image');
   if (!(image instanceof File) || image.size === 0) return { url: null, path: null, error: null };
   if (image.size > MAX_IMAGE_SIZE) return { url: null, path: null, error: 'Ukuran gambar maksimal 5 MB.' };
-  const extension = IMAGE_EXTENSIONS[image.type];
-  if (!extension) return { url: null, path: null, error: 'Format gambar harus JPG, PNG, atau WebP.' };
-  const bytes = new Uint8Array(await image.arrayBuffer());
-  if (!hasValidImageSignature(bytes, image.type)) return { url: null, path: null, error: 'Isi file tidak sesuai dengan format gambar yang dipilih.' };
+  const extension = image.name.split('.').pop()?.toLowerCase() || '';
+  if (!IMAGE_INPUT_EXTENSIONS.has(extension)) return { url: null, path: null, error: 'Format gambar tidak didukung. Gunakan JPG, PNG, WebP, HEIC/HEIF, AVIF, TIFF, atau GIF.' };
 
-  const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
-  const { error } = await supabase.storage.from(IMAGE_BUCKET).upload(path, bytes, {
-    contentType: image.type,
+  let convertedImage: Buffer;
+  try {
+    const input = Buffer.from(await image.arrayBuffer());
+    convertedImage = await sharp(input, { failOn: 'error', limitInputPixels: 40_000_000, pages: 1 })
+      .rotate()
+      .webp({ quality: 85, effort: 4 })
+      .toBuffer();
+  } catch {
+    return { url: null, path: null, error: 'File tidak dapat dibaca sebagai gambar. Untuk HEIC/HEIF, pastikan file tidak rusak atau terenkripsi.' };
+  }
+  if (convertedImage.length > MAX_IMAGE_SIZE) return { url: null, path: null, error: 'Ukuran gambar setelah diproses masih melebihi 5 MB. Pilih gambar dengan resolusi lebih kecil.' };
+
+  const path = `${folder}/${Date.now()}-${crypto.randomUUID()}.webp`;
+  const { error } = await supabase.storage.from(IMAGE_BUCKET).upload(path, convertedImage, {
+    contentType: 'image/webp',
     cacheControl: '31536000',
     upsert: false,
   });
