@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://margomulyo.desa.id';
+export const SITE_URL = 'https://margomulyo.site';
 export const SITE_NAME = 'Desa Margomulyo';
 export const SITE_DESCRIPTION =
   'Portal resmi Pemerintah Desa Margomulyo, Kecamatan Tegineneng, Kabupaten Pesawaran, Lampung. Temukan profil desa, layanan warga, data, berita, dan potensi desa.';
