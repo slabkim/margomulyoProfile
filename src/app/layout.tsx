@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import { connection } from "next/server";
 import { DM_Sans, Lora } from "next/font/google";
 import SiteChrome from "@/components/SiteChrome";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from "@/lib/site";
+import {
+  GOOGLE_SITE_VERIFICATION,
+  SITE_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+  absoluteUrl,
+} from "@/lib/site";
 import "./globals.css";
 
 const dmSans = DM_Sans({ variable: "--font-primary", subsets: ["latin"], display: "swap" });
@@ -62,9 +68,7 @@ export const metadata: Metadata = {
     description: SITE_DESCRIPTION,
     images: [absoluteUrl("/images/hero-bg.png")],
   },
-  verification: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-    ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION }
-    : undefined,
+  verification: { google: GOOGLE_SITE_VERIFICATION },
   other: {
     "geo.region": "ID-LA",
     "geo.placename": "Desa Margomulyo, Tegineneng, Pesawaran",
