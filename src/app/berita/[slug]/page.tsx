@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ArrowLeft, CalendarDays } from 'lucide-react';
 import { notFound } from 'next/navigation';
 import { getPublishedNewsBySlug } from '@/lib/news';
+import { formatNewsEventDate, getNewsEventStatus, getNewsEventStatusLabel } from '@/lib/news-schedule';
 import { isSupabaseStorageUrl } from '@/lib/utils';
 import '../../public-pages.css';
 
@@ -18,11 +19,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: article.title,
     description: article.excerpt ?? article.content.slice(0, 160),
+    alternates: { canonical: `/berita/${article.slug}` },
     openGraph: {
       title: article.title,
       description: article.excerpt ?? article.content.slice(0, 160),
+      url: `/berita/${article.slug}`,
       type: 'article',
       publishedTime: article.created_at,
+      modifiedTime: article.updated_at,
       images: article.image_url ? [article.image_url] : ['/images/hero-bg.png'],
     },
   };
@@ -34,11 +38,8 @@ export default async function NewsDetailPage({ params }: Props) {
 
   if (!article) notFound();
 
-  const publishedDate = new Date(article.created_at).toLocaleDateString('id-ID', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+  const eventStatus = getNewsEventStatus(article.event_at);
+  const eventDate = formatNewsEventDate(article.event_at);
 
   return (
     <>
@@ -48,7 +49,11 @@ export default async function NewsDetailPage({ params }: Props) {
             <Link href="/">Beranda</Link><span>/</span><Link href="/berita">Berita</Link><span>/</span>{article.category}
           </div>
           <h1>{article.title}</h1>
-          <div className="news-detail-meta"><span>{article.category}</span><time dateTime={article.created_at}><CalendarDays size={16} />{publishedDate}</time></div>
+          <div className="news-detail-meta">
+            <span>{article.category}</span>
+            <span className={`news-event-status news-event-status--${eventStatus}`}>{getNewsEventStatusLabel(eventStatus)}</span>
+            <time dateTime={article.event_at}><CalendarDays size={16} />{eventDate}</time>
+          </div>
         </div>
       </header>
       <main className="content-section surface-grid">

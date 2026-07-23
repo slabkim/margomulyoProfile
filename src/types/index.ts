@@ -9,6 +9,7 @@ export interface NewsArticle {
   image_url: string | null;
   category: string;
   is_published: boolean;
+  event_at: string;
   created_at: string;
   updated_at: string;
 }

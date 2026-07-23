@@ -6,7 +6,8 @@ import '../public-pages.css';
 
 export const metadata = {
   title: 'Galeri Desa',
-  description: 'Dokumentasi kegiatan dan potensi Desa Margomulyo.',
+  description: 'Galeri foto kegiatan warga, pertanian, lingkungan, dan potensi Desa Margomulyo, Kecamatan Tegineneng, Pesawaran.',
+  alternates: { canonical: '/galeri' },
 };
 
 const fallback = [

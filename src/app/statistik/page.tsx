@@ -11,7 +11,8 @@ import '../public-pages.css';
 
 export const metadata = {
   title: 'Data Desa',
-  description: 'Data resmi kependudukan, wilayah, dan potensi Desa Margomulyo.',
+  description: 'Data resmi penduduk, dusun, luas wilayah, pertanian, fasilitas, dan potensi Desa Margomulyo, Kecamatan Tegineneng, Pesawaran.',
+  alternates: { canonical: '/statistik' },
 };
 
 export default async function StatistikPage() {

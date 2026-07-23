@@ -1,0 +1,247 @@
+.kkn-hero {
+  min-height: 620px;
+  display: flex;
+  align-items: flex-end;
+  background:
+    linear-gradient(115deg, rgba(10, 35, 25, .94), rgba(23, 58, 46, .78)),
+    radial-gradient(circle at 80% 20%, var(--forest-700), var(--forest-950));
+}
+
+.kkn-hero-kicker {
+  margin: 0 0 16px;
+  color: #e7b66a !important;
+  font-size: .75rem !important;
+  font-weight: 800;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+
+.kkn-intro {
+  display: grid;
+  grid-template-columns: minmax(220px, .55fr) minmax(0, 1.45fr);
+  align-items: start;
+  gap: clamp(48px, 8vw, 110px);
+}
+
+.kkn-period {
+  display: flex;
+  min-height: 300px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 30px;
+  color: var(--white);
+  background: var(--clay-500);
+}
+
+.kkn-period span,
+.kkn-period small {
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+
+.kkn-period strong {
+  font: 500 clamp(6rem, 12vw, 9rem)/.8 var(--font-serif);
+  letter-spacing: -.08em;
+}
+
+.kkn-copy h2 {
+  max-width: 720px;
+  margin-bottom: 28px;
+  color: var(--forest-950);
+  font-size: clamp(2.5rem, 5vw, 4.6rem);
+  letter-spacing: -.045em;
+}
+
+.kkn-copy p {
+  max-width: 760px;
+  font-size: 1.02rem;
+  line-height: 1.85;
+}
+
+.kkn-copy strong {
+  color: var(--forest-900);
+}
+
+.kkn-team-section {
+  overflow: hidden;
+}
+
+.kkn-team-heading {
+  display: grid;
+  max-width: none;
+  grid-template-columns: minmax(0, 1.2fr) minmax(260px, .8fr);
+  align-items: end;
+  gap: 70px;
+}
+
+.kkn-team-heading h2 {
+  margin-bottom: 0;
+}
+
+.kkn-team-heading > p {
+  margin-bottom: 7px;
+}
+
+.kkn-team-photos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.kkn-team-photos figure {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  background: var(--forest-100);
+}
+
+.kkn-team-photos img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  transition: transform .5s ease;
+}
+
+.kkn-team-photos figure:hover img {
+  transform: scale(1.025);
+}
+
+.kkn-team-photos figcaption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  padding: 55px 22px 18px;
+  color: var(--white);
+  background: linear-gradient(transparent, rgba(8, 25, 18, .86));
+  font-size: .7rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+}
+
+.kkn-member-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 20px;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.kkn-member {
+  display: grid;
+  min-height: 115px;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  padding: 22px 24px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, .72);
+}
+
+.kkn-member span {
+  color: var(--clay-600);
+  font-size: .68rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.kkn-member strong {
+  color: var(--forest-950);
+  font: 500 1.18rem/1.3 var(--font-serif);
+}
+
+.kkn-section-heading {
+  max-width: 760px;
+}
+
+.kkn-contribution-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.kkn-contribution-card {
+  min-width: 0;
+  padding: 32px;
+  border: 1px solid var(--line);
+  background: var(--white);
+}
+
+.kkn-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 42px;
+}
+
+.kkn-card-top .feature-icon {
+  margin-bottom: 0;
+}
+
+.kkn-card-number {
+  color: var(--clay-600);
+  font-size: .7rem;
+  font-weight: 800;
+  letter-spacing: .12em;
+}
+
+.kkn-contribution-card h3 {
+  margin-bottom: 12px;
+  color: var(--forest-950);
+  font-size: 1.45rem;
+}
+
+.kkn-contribution-card p {
+  margin: 0;
+  font-size: .86rem;
+}
+
+.kkn-closing-section {
+  color: var(--white);
+  background: var(--forest-900);
+}
+
+.kkn-closing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+}
+
+.kkn-closing p {
+  max-width: 800px;
+  margin: 0;
+  color: var(--white);
+  font: 500 clamp(1.45rem, 3vw, 2.25rem)/1.45 var(--font-serif);
+}
+
+.kkn-closing .button {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 850px) {
+  .kkn-hero { min-height: 540px; }
+  .kkn-intro { grid-template-columns: minmax(180px, .55fr) minmax(0, 1.45fr); gap: 45px; }
+  .kkn-team-heading { grid-template-columns: 1fr; gap: 15px; }
+  .kkn-member-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .kkn-contribution-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 580px) {
+  .kkn-hero { min-height: 500px; }
+  .kkn-intro { grid-template-columns: 1fr; }
+  .kkn-period { min-height: 220px; }
+  .kkn-period strong { font-size: 6rem; }
+  .kkn-copy h2 { font-size: clamp(2.35rem, 11vw, 3.25rem); }
+  .kkn-team-photos { grid-template-columns: 1fr; }
+  .kkn-member-list { grid-template-columns: 1fr; }
+  .kkn-member { min-height: 92px; }
+  .kkn-contribution-card { padding: 25px 22px; }
+  .kkn-closing { align-items: flex-start; flex-direction: column; }
+  .kkn-closing .button { width: 100%; }
+}

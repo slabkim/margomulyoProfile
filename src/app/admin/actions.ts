@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import sharp from 'sharp';
+import { parseVillageDateTime } from '@/lib/news-schedule';
 import { createClient } from '@/lib/supabase/server';
 import { AGE_GROUP_OPTIONS, HOME_STATISTIC_OPTIONS, calculateAgeGroupCounts, canonicalManagedStatisticLabel } from '@/lib/statistics';
 
@@ -31,15 +32,30 @@ export async function login(_: AuthState, formData: FormData): Promise<AuthState
   if (!email || !password) return { error: 'Email dan kata sandi wajib diisi.' };
   if (email.length > 254 || password.length > 1024) return { error: 'Email atau kata sandi tidak sesuai.' };
 
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-  if (error || !data.user) return { error: 'Email atau kata sandi tidak sesuai.' };
+  try {
+    const supabase = await createClient();
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error || !data.user) return { error: 'Email atau kata sandi tidak sesuai.' };
 
-  const { data: admin } = await supabase.from('admin_users').select('user_id').eq('user_id', data.user.id).eq('is_active', true).maybeSingle();
-  if (!admin) {
-    await supabase.auth.signOut();
-    return { error: 'Akun ini tidak memiliki akses administrator.' };
+    const { data: admin, error: adminError } = await supabase
+      .from('admin_users')
+      .select('user_id')
+      .eq('user_id', data.user.id)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (adminError) {
+      await supabase.auth.signOut();
+      return { error: 'Data administrator belum dapat diperiksa. Silakan coba kembali.' };
+    }
+    if (!admin) {
+      await supabase.auth.signOut();
+      return { error: 'Akun ini tidak memiliki akses administrator.' };
+    }
+  } catch {
+    return { error: 'Layanan autentikasi sedang tidak dapat dijangkau. Periksa koneksi lalu coba kembali.' };
   }
+
   redirect('/admin');
 }
 
@@ -132,14 +148,15 @@ export async function saveNews(formData: FormData) {
   const content = limitedValue(formData, 'content', 50000);
   const excerpt = limitedValue(formData, 'excerpt', 500);
   const category = limitedValue(formData, 'category', 60);
-  if (!title || content === null || excerpt === null || category === null) redirect('/admin/berita?error=Konten tidak valid atau terlalu panjang');
+  const eventAt = parseVillageDateTime(value(formData, 'event_at'));
+  if (!title || content === null || excerpt === null || category === null || !eventAt) redirect('/admin/berita?error=Tanggal, waktu, atau konten berita tidak valid');
   const { data: existingArticle } = id
     ? await supabase.from('news_articles').select('image_url').eq('id', id).maybeSingle()
     : { data: null };
   const currentImage = existingArticle?.image_url || null;
   const upload = await uploadImage(supabase, formData, 'news');
   if (upload.error) redirect(`/admin/berita/${id || 'baru'}?error=${encodeURIComponent(upload.error)}`);
-  const payload = { title, slug: slugify(limitedValue(formData, 'slug', 200) || title), excerpt: excerpt || null, content, category: category || 'Berita', image_url: upload.url || currentImage, is_published: formData.get('is_published') === 'on', updated_at: new Date().toISOString() };
+  const payload = { title, slug: slugify(limitedValue(formData, 'slug', 200) || title), excerpt: excerpt || null, content, category: category || 'Berita', image_url: upload.url || currentImage, event_at: eventAt, is_published: formData.get('is_published') === 'on', updated_at: new Date().toISOString() };
   const result = id ? await supabase.from('news_articles').update(payload).eq('id', id) : await supabase.from('news_articles').insert(payload);
   if (result.error) {
     if (upload.path) await supabase.storage.from(IMAGE_BUCKET).remove([upload.path]);

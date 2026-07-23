@@ -6,6 +6,7 @@ export const fallbackNewsArticles: NewsArticle[] = [
   {
     id: '1',
     category: 'Pertanian',
+    event_at: '2024-05-12T08:00:00+07:00',
     created_at: '2024-05-12',
     updated_at: '2024-05-12',
     title: 'Gotong Royong Perbaikan Saluran Irigasi Menjelang Musim Tanam',
@@ -18,6 +19,7 @@ export const fallbackNewsArticles: NewsArticle[] = [
   {
     id: '2',
     category: 'Pemberdayaan',
+    event_at: '2024-05-08T09:00:00+07:00',
     created_at: '2024-05-08',
     updated_at: '2024-05-08',
     title: 'Bantuan Bibit Jagung Unggul untuk Kelompok Tani',
@@ -30,6 +32,7 @@ export const fallbackNewsArticles: NewsArticle[] = [
   {
     id: '3',
     category: 'Kegiatan',
+    event_at: '2024-05-02T13:00:00+07:00',
     created_at: '2024-05-02',
     updated_at: '2024-05-02',
     title: 'Pelatihan Pupuk Organik bagi Pemuda Desa',
@@ -50,5 +53,12 @@ export const getPublishedNewsBySlug = cache(async (slug: string): Promise<NewsAr
     .eq('is_published', true)
     .maybeSingle();
 
-  return (data as NewsArticle | null) ?? fallbackNewsArticles.find((article) => article.slug === slug) ?? null;
+  if (data) {
+    return {
+      ...data,
+      event_at: data.event_at || data.created_at,
+    } as NewsArticle;
+  }
+
+  return fallbackNewsArticles.find((article) => article.slug === slug) ?? null;
 });

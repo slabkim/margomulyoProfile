@@ -4,7 +4,11 @@ import { createClient } from '@/lib/supabase/server';
 import { OFFICIAL_MISSIONS, OFFICIAL_VISION } from '@/lib/village-data';
 import '../public-pages.css';
 
-export const metadata = { title: 'Profil Desa', description: 'Sejarah, visi, misi, dan kondisi wilayah Desa Margomulyo.' };
+export const metadata = {
+  title: 'Profil Desa',
+  description: 'Profil lengkap Desa Margomulyo, Kecamatan Tegineneng, Pesawaran: sejarah, visi, misi, pemerintahan, penduduk, dan kondisi wilayah.',
+  alternates: { canonical: '/profil' },
+};
 const villageHeads: VillageHeadProfile[] = [
   { name: 'Data belum tersedia', period: 'Belum ada periode', position: 'Kepala Desa Margomulyo', profile: 'Profil kepala desa dapat ditambahkan oleh administrator melalui panel pengelolaan website.', photo: undefined },
 ];

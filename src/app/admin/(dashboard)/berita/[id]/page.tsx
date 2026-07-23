@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ArrowLeft, Save } from 'lucide-react';
 import ImageUploadPreview from '@/components/admin/ImageUploadPreview';
+import { toDateTimeLocalValue } from '@/lib/news-schedule';
 import { createClient } from '@/lib/supabase/server';
 import { saveNews } from '../../../actions';
 
@@ -20,6 +21,7 @@ export default async function EditNewsPage({ params, searchParams }: { params: P
       <label>Judul<input name="title" required defaultValue={data.title} /></label>
       <label>Kategori<input name="category" defaultValue={data.category} /></label>
       <label className="admin-field-full">Slug<input name="slug" defaultValue={data.slug} /></label>
+      <label className="admin-field-full">Tanggal dan waktu kegiatan (WIB)<input name="event_at" type="datetime-local" required defaultValue={toDateTimeLocalValue(data.event_at || data.created_at)} /></label>
       <label className="admin-field-full">Ringkasan<textarea name="excerpt" defaultValue={data.excerpt || ''} /></label>
       <label className="admin-field-full">Isi berita<textarea className="editor" name="content" required defaultValue={data.content} /></label>
       <ImageUploadPreview label="Ganti gambar utama" variant="landscape" currentImage={data.image_url || undefined} currentAlt={`Gambar ${data.title}`} helperText="Kosongkan untuk mempertahankan gambar saat ini. Mendukung JPG, PNG, WebP, HEIC/HEIF, AVIF, TIFF, dan GIF; maksimal 5 MB." />

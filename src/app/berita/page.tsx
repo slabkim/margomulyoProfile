@@ -1,14 +1,16 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarClock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { fallbackNewsArticles } from '@/lib/news';
+import { formatNewsEventDate, getNewsEventStatus, getNewsEventStatusLabel, sortNewsByEventStatus } from '@/lib/news-schedule';
 import { isSupabaseStorageUrl } from '@/lib/utils';
 import '../public-pages.css';
 
 export const metadata = {
   title: 'Berita Desa',
-  description: 'Kabar dan kegiatan terbaru Desa Margomulyo.',
+  description: 'Berita, agenda, kegiatan warga, pelayanan, dan perkembangan terbaru dari Pemerintah Desa Margomulyo, Tegineneng, Pesawaran.',
+  alternates: { canonical: '/berita' },
 };
 
 const categories = ['Pertanian', 'Pelayanan', 'Kegiatan'] as const;
@@ -30,11 +32,11 @@ export default async function BeritaPage({
   const supabase = await createClient();
   const { data } = await supabase
     .from('news_articles')
-    .select('id,title,slug,excerpt,image_url,category,created_at')
+    .select('id,title,slug,excerpt,image_url,category,event_at,created_at')
     .eq('is_published', true)
-    .order('created_at', { ascending: false });
+    .order('event_at', { ascending: false });
 
-  const allArticles = data?.length ? data : fallbackNewsArticles;
+  const allArticles = sortNewsByEventStatus([...(data?.length ? data : fallbackNewsArticles)]);
   let articles = activeCategory
     ? allArticles.filter((article) => article.category === activeCategory)
     : allArticles;
@@ -93,8 +95,9 @@ export default async function BeritaPage({
           {visibleArticles.length ? (
             <>
             <div className="article-list">
-              {visibleArticles.map((article) => (
-                <Link href={`/berita/${article.slug}`} className="article-item" key={article.id}>
+              {visibleArticles.map((article) => {
+                const eventStatus = getNewsEventStatus(article.event_at);
+                return <Link href={`/berita/${article.slug}`} className="article-item" key={article.id}>
                   <div className="article-photo">
                     <Image
                       src={article.image_url || '/images/hero-bg.png'}
@@ -107,13 +110,14 @@ export default async function BeritaPage({
                   <div className="article-content">
                     <div className="article-meta">
                       <span>{article.category}</span>
-                      <time>{new Date(article.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
+                      <span className={`article-status article-status--${eventStatus}`}>{getNewsEventStatusLabel(eventStatus)}</span>
                     </div>
                     <h2>{article.title}</h2>
                     <p>{article.excerpt}</p>
+                    <time className="article-event-time" dateTime={article.event_at}><CalendarClock size={15} />{formatNewsEventDate(article.event_at)}</time>
                   </div>
-                </Link>
-              ))}
+                </Link>;
+              })}
             </div>
             {totalPages > 1 && <nav className="content-pagination" aria-label="Paginasi berita">
               {activePage > 1 ? <Link href={pageHref(activePage - 1)} aria-label="Halaman berita sebelumnya"><ChevronLeft size={17} />Sebelumnya</Link> : <span className="disabled"><ChevronLeft size={17} />Sebelumnya</span>}

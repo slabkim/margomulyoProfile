@@ -31,7 +31,10 @@ export default function Footer() {
       </div>
       <div className="container footer-bottom">
         <span>© {new Date().getFullYear()} Pemerintah Desa Margomulyo</span>
-        <span>Kode Wilayah 18.09.03.2012</span>
+        <div className="footer-bottom-meta">
+          <span>Kode Wilayah 18.09.03.2012</span>
+          <Link href="/tim-kkn">Dibuat oleh Tim KKN Tematik Literasi Unila 2026 <ArrowUpRight size={13} /></Link>
+        </div>
       </div>
     </footer>
   );

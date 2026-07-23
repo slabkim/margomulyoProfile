@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import {
   ArrowRight, CalendarDays, ChevronRight, Clock3, FileText, HeartPulse,
   MapPin, MessageCircle, Sprout, Store, Users, Wheat,
@@ -9,7 +10,59 @@ import { fallbackNewsArticles } from '@/lib/news';
 import { buildHomepageStatistics } from '@/lib/statistics';
 import { isSupabaseStorageUrl } from '@/lib/utils';
 import { OFFICIAL_DATA_YEAR, OFFICIAL_POPULATION_STATS } from '@/lib/village-data';
+import {
+  SITE_DESCRIPTION, SITE_NAME, SITE_URL, VILLAGE_LOCATION, absoluteUrl,
+} from '@/lib/site';
 import './page.css';
+
+export const metadata: Metadata = {
+  title: { absolute: 'Desa Margomulyo, Tegineneng, Pesawaran | Portal Resmi' },
+  description: SITE_DESCRIPTION,
+  alternates: { canonical: '/' },
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'GovernmentOrganization',
+      '@id': `${SITE_URL}/#organization`,
+      name: 'Pemerintah Desa Margomulyo',
+      alternateName: ['Desa Margomulyo', 'Margomulyo Tegineneng'],
+      url: SITE_URL,
+      logo: absoluteUrl('/Lambang_Kabupaten_Pesawaran.png'),
+      image: absoluteUrl('/images/hero-bg.png'),
+      email: 'desa.margomulyo@pesawaran.go.id',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: VILLAGE_LOCATION.streetAddress,
+        addressLocality: VILLAGE_LOCATION.addressLocality,
+        addressRegion: VILLAGE_LOCATION.addressRegion,
+        postalCode: VILLAGE_LOCATION.postalCode,
+        addressCountry: VILLAGE_LOCATION.addressCountry,
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: VILLAGE_LOCATION.latitude,
+        longitude: VILLAGE_LOCATION.longitude,
+      },
+      areaServed: {
+        '@type': 'AdministrativeArea',
+        name: 'Desa Margomulyo, Kecamatan Tegineneng, Kabupaten Pesawaran',
+      },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${SITE_URL}/#website`,
+      url: SITE_URL,
+      name: SITE_NAME,
+      alternateName: 'Portal Resmi Pemerintah Desa Margomulyo',
+      description: SITE_DESCRIPTION,
+      inLanguage: 'id-ID',
+      publisher: { '@id': `${SITE_URL}/#organization` },
+    },
+  ],
+};
 
 const services = [
   { icon: FileText, title: 'Administrasi Warga', text: 'Pengantar KTP, KK, pindah datang, dan dokumen kependudukan.', href: '/layanan' },
@@ -39,13 +92,19 @@ export default async function HomePage() {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c'),
+        }}
+      />
       <section className="home-hero">
         <Image src="/images/hero-bg.png" alt="Hamparan lahan pertanian Desa Margomulyo" fill priority sizes="100vw" className="hero-image" />
         <div className="hero-shade" />
         <div className="container hero-layout">
           <div className="hero-copy">
             <p className="hero-kicker"><span /> Portal Resmi Pemerintah Desa</p>
-            <h1>Tumbuh dari tanah,<br /><em>maju bersama.</em></h1>
+            <h1>Desa Margomulyo,<br /><em>maju bersama.</em></h1>
             <p className="hero-lead">Margomulyo adalah rumah bagi masyarakat agraris yang hidup dari kerja keras, gotong royong, dan harapan untuk masa depan yang lebih baik.</p>
             <div className="hero-actions">
               <Link href="/profil" className="button button-primary">Kenali Desa Kami <ArrowRight size={17} /></Link>

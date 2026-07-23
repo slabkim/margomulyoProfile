@@ -11,6 +11,7 @@ insert into
         image_url,
         category,
         is_published,
+        event_at,
         created_at,
         updated_at
     )
@@ -24,6 +25,7 @@ values (
         'Pertanian',
         true,
         '2026-07-12 08:00:00+07',
+        '2026-07-12 08:00:00+07',
         '2026-07-12 08:00:00+07'
     ),
     (
@@ -35,6 +37,7 @@ values (
         '/images/hero-bg.png',
         'Pemberdayaan',
         true,
+        '2026-07-08 09:30:00+07',
         '2026-07-08 09:30:00+07',
         '2026-07-08 09:30:00+07'
     ),
@@ -48,6 +51,7 @@ values (
         'Kegiatan',
         true,
         '2026-07-03 13:00:00+07',
+        '2026-07-03 13:00:00+07',
         '2026-07-03 13:00:00+07'
     ),
     (
@@ -59,6 +63,7 @@ values (
         '/images/hero-bg.png',
         'Pelayanan',
         true,
+        '2026-07-01 07:30:00+07',
         '2026-07-01 07:30:00+07',
         '2026-07-01 07:30:00+07'
     ),
@@ -72,6 +77,7 @@ values (
         'Pemerintahan',
         false,
         '2026-06-27 10:00:00+07',
+        '2026-06-27 10:00:00+07',
         '2026-06-27 10:00:00+07'
     ) on conflict (slug) do
 update
@@ -82,6 +88,7 @@ set
     image_url = excluded.image_url,
     category = excluded.category,
     is_published = excluded.is_published,
+    event_at = excluded.event_at,
     updated_at = excluded.updated_at;
 
 insert into

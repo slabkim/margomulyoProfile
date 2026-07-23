@@ -12,6 +12,7 @@ export default async function NewNewsPage({ searchParams }: { searchParams: Prom
     <form action={saveNews} className="admin-form">
       <label>Judul<input name="title" required placeholder="Judul berita" /></label>
       <label>Kategori<select name="category"><option>Pertanian</option><option>Kegiatan</option><option>Pelayanan</option><option>Pemberdayaan</option><option>Pengumuman</option></select></label>
+      <label className="admin-field-full">Tanggal dan waktu kegiatan (WIB)<input name="event_at" type="datetime-local" required /></label>
       <label className="admin-field-full">Ringkasan<textarea name="excerpt" placeholder="Ringkasan singkat untuk kartu berita" /></label>
       <label className="admin-field-full">Isi berita<textarea className="editor" name="content" required placeholder="Tulis isi berita lengkap…" /></label>
       <ImageUploadPreview label="Gambar utama" variant="landscape" required />
